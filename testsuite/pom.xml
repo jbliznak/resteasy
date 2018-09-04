@@ -153,17 +153,17 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <testFailureIgnore>true</testFailureIgnore>
                             <systemPropertyVariables>
                                 <securityManagerArg>${securityManagerArg}</securityManagerArg>
-                                <additionalJvmArgs>${additionalJvmArgs}</additionalJvmArgs>
+                                <additionalJvmArgs>${additionalJvmArgs} ${modular.jdk.props}</additionalJvmArgs>
                                 <ipv6>true</ipv6>
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
                                 <node>::1</node>
+                                <jboss.home>${jboss.home}</jboss.home>
                                 <project.version>${project.version}</project.version>
                                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
                             </systemPropertyVariables>
-                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
+                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
                         </configuration>
                     </plugin>
 

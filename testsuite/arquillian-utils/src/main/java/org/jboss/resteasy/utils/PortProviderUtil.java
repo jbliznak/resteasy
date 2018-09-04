@@ -139,12 +139,7 @@ public class PortProviderUtil {
      * @return a full URL
      */
     public static String generateURL(String path, String testName, String hostName, int port) {
-        // ipv4
-        if (!ipv6) {
-            return String.format("http://%s:%d/%s%s", hostName, port, testName, path);
-        }
-        // ipv6
-        return String.format("http://[%s]:%d/%s%s", hostName, port, testName, path);
+        return String.format("http://%s:%d/%s%s", encloseHostname(hostName), port, testName, path);
     }
 
     /**
@@ -157,12 +152,26 @@ public class PortProviderUtil {
     }
 
     /**
-     * Get host IP.
+     * Get host formatted to use in URLs
      *
-     * @return The host IP
+     * @return The host
      */
     public static String getHost() {
-        return host;
+        return encloseHostname(host);
+    }
+
+    /**
+     * Get hostname formatted to use in URLs, ie. wrapped in [] if it is IPv6 address
+     *
+     * @return The hostname safe to use in URLs
+     */
+    private static String encloseHostname(String hostName) {
+        // ipv6 address needs to be wrapped in [], don't wrap domain name
+        if (ipv6 && !hostName.startsWith("[") && hostName.contains(":")) {
+            return "[" + hostName + "]";
+        } else {
+            return hostName;
+        }
     }
 
     /**
