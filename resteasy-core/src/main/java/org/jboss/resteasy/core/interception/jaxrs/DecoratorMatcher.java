@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -85,8 +86,8 @@ public class DecoratorMatcher
    private <T> T doDecoration(T target, Class type, Annotation[] annotations, MediaType mediaType, Annotation annotation, Decorator decorator) {
       DecoratorProcessor processor = null;
       try {
-         processor = decorator.processor().newInstance();
-      } catch (InstantiationException e) {
+         processor = decorator.processor().getDeclaredConstructor().newInstance();
+      } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
          throw new RuntimeException(e.getCause());
       } catch (IllegalAccessException e) {
          throw new RuntimeException(e);

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection.resource;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -9,7 +10,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class LazyInitUriInfoInjectionSingletonResource implements ResourceFactory {
-   private Class clazz;
+   private Class<?> clazz;
    private Object obj;
 
    public LazyInitUriInfoInjectionSingletonResource(final Class clazz) {
@@ -24,10 +25,8 @@ public class LazyInitUriInfoInjectionSingletonResource implements ResourceFactor
    public CompletionStage<Object> createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory) {
       if (obj == null) {
          try {
-            obj = clazz.newInstance();
-         } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-         } catch (IllegalAccessException e) {
+            obj = clazz.getDeclaredConstructor().newInstance();
+         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
          }
          return factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj, true)

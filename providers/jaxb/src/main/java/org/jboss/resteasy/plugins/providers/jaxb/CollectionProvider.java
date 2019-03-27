@@ -238,7 +238,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             {
                try
                {
-                  outCol = (Collection) type.newInstance();
+                  outCol = (Collection) type.getDeclaredConstructor().newInstance();
                }
                catch (Exception e)
                {

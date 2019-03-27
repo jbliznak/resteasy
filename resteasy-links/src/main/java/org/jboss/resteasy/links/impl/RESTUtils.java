@@ -305,7 +305,7 @@ public class RESTUtils {
          return null;
       Class<? extends ELProvider> elProviderClass = linkElProvider.value();
       try{
-         return elProviderClass.newInstance();
+         return elProviderClass.getDeclaredConstructor().newInstance();
       }catch(Exception x){
          LogMessages.LOGGER.error(Messages.MESSAGES.couldNotInstantiateELProviderClass(elProviderClass.getName()), x);
          throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToInstantiateELProvider(elProviderClass.getName()), x);

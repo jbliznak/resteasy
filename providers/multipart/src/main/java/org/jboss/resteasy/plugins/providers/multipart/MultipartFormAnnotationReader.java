@@ -59,9 +59,9 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
       Object obj;
       try
       {
-         obj = type.newInstance();
+         obj = type.getDeclaredConstructor().newInstance();
       }
-      catch (InstantiationException e)
+      catch (InstantiationException | NoSuchMethodException | InvocationTargetException e)
       {
          throw new ReaderException(e.getCause());
       }

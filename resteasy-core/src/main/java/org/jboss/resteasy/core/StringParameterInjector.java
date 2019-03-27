@@ -486,9 +486,9 @@ public class StringParameterInjector
          {
             try
             {
-               unmarshaller = binder.value().newInstance();
+               unmarshaller = binder.value().getDeclaredConstructor().newInstance();
             }
-            catch (InstantiationException e)
+            catch (InstantiationException | NoSuchMethodException | InvocationTargetException e)
             {
                throw new RuntimeException(e.getCause());
             }
@@ -636,7 +636,7 @@ public class StringParameterInjector
          Collection collection = null;
          try
          {
-            collection = collectionType.newInstance();
+            collection = collectionType.getDeclaredConstructor().newInstance();
          }
          catch (Exception e)
          {

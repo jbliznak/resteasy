@@ -268,9 +268,9 @@ class MicroprofileClientBuilder implements RestClientBuilder {
       return this;
    }
 
-   private static Object newInstanceOf(Class clazz) {
+   private static Object newInstanceOf(Class<?> clazz) {
       try {
-         return clazz.newInstance();
+         return clazz.getDeclaredConstructor().newInstance();
       } catch (Throwable t) {
          throw new RuntimeException("Failed to register " + clazz, t);
       }

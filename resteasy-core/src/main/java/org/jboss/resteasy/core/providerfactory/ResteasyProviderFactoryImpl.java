@@ -952,7 +952,7 @@ public class ResteasyProviderFactoryImpl extends ResteasyProviderFactory impleme
       {
          try
          {
-            this.injectorFactory = (InjectorFactory) provider.newInstance();
+            this.injectorFactory = (InjectorFactory) provider.getDeclaredConstructor().newInstance();
             newContracts.put(InjectorFactory.class, 0);
          }
          catch (Exception e)

@@ -228,14 +228,14 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          Class<?> factoryClass = AbstractJAXBContextFinder.findDefaultObjectFactoryClass(type);
          if (factoryClass != null && factoryClass.isAnnotationPresent(XmlRegistry.class))
          {
-            return factoryClass.newInstance();
+            return factoryClass.getDeclaredConstructor().newInstance();
          }
          else
          {
             throw new JAXBMarshalException(Messages.MESSAGES.validXmlRegistryCouldNotBeLocated());
          }
       }
-      catch (InstantiationException | IllegalAccessException e)
+      catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
       {
          throw new JAXBMarshalException(e);
       }

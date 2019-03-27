@@ -84,7 +84,7 @@ public class TestApplication extends Application {
          for (String clazz : getClassesFromDeployment("singletons")) {
             if (!clazz.isEmpty()) {
                try {
-                  singletons.add(Class.forName(clazz).newInstance());
+                  singletons.add(Class.forName(clazz).getDeclaredConstructor().newInstance());
                } catch (Exception e) {
                   throw new RuntimeException("Class " + clazz + " not found.", e);
                }

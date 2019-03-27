@@ -119,7 +119,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
             {
                LogMessages.LOGGER.info(Messages.MESSAGES.foundModule(moduleString));
                final Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
-               final Module module = (Module) clazz.newInstance();
+               final Module module = (Module) clazz.getDeclaredConstructor().newInstance();
                result.add(module);
             }
             catch (ClassNotFoundException e)
@@ -130,7 +130,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
             {
                throw new RuntimeException(e);
             }
-            catch (InstantiationException e)
+            catch (InstantiationException | NoSuchMethodException | InvocationTargetException e)
             {
                throw new RuntimeException(e);
             }
