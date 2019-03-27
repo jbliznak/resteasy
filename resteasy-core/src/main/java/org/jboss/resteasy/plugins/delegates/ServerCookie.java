@@ -79,6 +79,7 @@ public class ServerCookie implements Serializable
     * @param name name
     * @return boolean flag
     */
+   @Deprecated
    public static boolean checkName(String name)
    {
       if (!isToken(name)

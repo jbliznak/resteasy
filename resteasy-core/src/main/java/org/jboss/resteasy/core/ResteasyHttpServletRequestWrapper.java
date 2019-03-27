@@ -199,6 +199,7 @@ public class ResteasyHttpServletRequestWrapper extends ServletRequestWrapper imp
     *            instead.
     *
     */
+   @Deprecated
    @Override
    public boolean isRequestedSessionIdFromUrl()
    {
