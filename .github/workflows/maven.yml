@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest ]
+        os: [ubuntu-latest]
         java: ['11', '17']
         wildfly-version: ['25.0.1.Final']
 
@@ -37,17 +37,17 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
+      - name: Download server
+        run: |
+          echo "::group::Get server"
+          wget https://github.com/wildfly/wildfly/releases/download/${{ matrix.wildfly-version }}/wildfly-${{ matrix.wildfly-version }}.zip
+          unzip -q wildfly-${{ matrix.wildfly-version }}.zip
+          echo "::endgroup::"
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Linux
         if: runner.os == 'Linux'
         run: |
           echo "::group::Build Logs"
-          mvn clean install -U -B -fae -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Djava8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
-      - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }} - Windows
-        if: runner.os == 'Windows'
-        run:  |
-          echo "::group::Build Logs"
-          mvn clean install -U -B -fae '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Djava8.home=%JAVA_HOME_8_X64%"'
+          mvn clean install -U -B -fae -Dserver.home=`pwd`/wildfly-${{ matrix.wildfly-version }} -Dgithub.actions -Djava8.home="$JAVA_HOME_8_X64"
           echo "::endgroup::"
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest ]
+        os: [ubuntu-latest]
         wildfly-version: ['25.0.1.Final']
 
     steps:
@@ -84,6 +84,12 @@ jobs:
           java-version: 11
           distribution: 'temurin'
           cache: 'maven'
+      - name: Download server
+        run: |
+          echo "::group::Get server"
+          wget https://github.com/wildfly/wildfly/releases/download/${{ matrix.wildfly-version }}/wildfly-${{ matrix.wildfly-version }}.zip
+          unzip -q wildfly-${{ matrix.wildfly-version }}.zip
+          echo "::endgroup::"
       - name: Build with Java 11
         run: |
           echo "::group::Build Logs"
@@ -93,13 +99,7 @@ jobs:
         if: runner.os == 'Linux'
         run:  |
           echo "::group::Test Logs"
-          mvn clean install -U -B -fae -rf ':resteasy-testsuite' -Dserver.version=${{ matrix.wildfly-version }} -Dgithub.actions -Dtest.java8.home="$JAVA_HOME_8_X64"
-          echo "::endgroup::"
-      - name: Test with Java 8 on WildFly ${{ matrix.wildfly-version }} - Windows
-        if: runner.os == 'Windows'
-        run: |
-          echo "::group::Build Logs"
-          mvn clean install -U -B -fae -rf ':resteasy-testsuite' '-Dserver.version=${{ matrix.wildfly-version }}' '-Dgithub.actions' '"-Dtest.java8.home=%JAVA_HOME_8_X64%"'
+          mvn clean install -U -B -fae -rf ':resteasy-testsuite' -Dserver.home=`pwd`/wildfly-${{ matrix.wildfly-version }} -Dgithub.actions -Dtest.java8.home="$JAVA_HOME_8_X64"
           echo "::endgroup::"
       - uses: actions/upload-artifact@v2
         if: failure()

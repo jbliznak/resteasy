@@ -27,15 +27,18 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build WildFly
-        run: 'mvn clean install -DskipTests -Dcheckstyle.skip=true -Denforcer.skip=true'
+        run: 'mvn clean install -pl :wildfly-dist -am -DskipTests -Denforcer.skip -Dcheckstyle.skip -Drelease'
       - id: version
         run: echo "::set-output name=wildfly-version::$(mvn -B help:evaluate -Dexpression=project.version -pl . | grep -v '^\[')"
-      - name: Archive the repository
-        run: zip -r ~/maven-repository.zip ~/.m2/repository
+      - name: Archive the server
+        run: |
+            cd ./dist/target
+            mv wildfly-*-SNAPSHOT server
+            zip -r ~/server.zip server
       - uses: actions/upload-artifact@v2
         with:
-          name: maven-repository
-          path: ~/maven-repository.zip
+          name: server
+          path: ~/server.zip
           retention-days: 5
 
   resteasy-build:
@@ -44,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         java: ['11', '17']
 
     steps:
@@ -58,14 +61,11 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Copy Maven Repository - Linux
+      - name: Copy server - Linux
         if: runner.os == 'Linux'
-        run: unzip -o -d ~/.m2/repository ./maven-repository.zip
-      - name: Copy Maven Repository - Windows
-        if: runner.os == 'Windows'
-        run: 7z x 'maven-repository.zip' '%USERPROFILE%\.m2\repository'
+        run: unzip -o ./server.zip
       - name: Build with Maven Java ${{ matrix.java }}
-        run: mvn clean install '-Dserver.version=${{needs.wildfly-build.outputs.wildfly-version}}'
+        run: mvn clean install '-Dserver.home=`pwd`/server'
       - name: Upload surefire reports
         uses: actions/upload-artifact@v2
         if: failure()
